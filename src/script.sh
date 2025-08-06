@@ -1,63 +1,63 @@
 #!/bin/bash
 
-read -p "请输入 Emby 容器名称:" name
+read -p "Please enter the Emby container name: " name  # 请输入 Emby 容器名称
 
-echo "Emby-css安装中...
-1.先检查插件
-2.再修改首页html"
+echo "Emby-css installation in progress...
+1. First, check the plugin
+2. Then modify the homepage html"  # Emby-css安装中... 1.先检查插件 2.再修改首页html
 
-# 使用 docker exec 检查文件是否存在  
+# Use docker exec to check if the file exists  
 if docker exec "$name" test -f "/config/plugins/Emby.CustomCssJS.dll"; then  
-    echo "插件已安装过，无需重复安装！"  
+    echo "Plugin already installed, no need to install again!"  # 插件已安装过，无需重复安装！
 else  
-    # 安装插件
+    # Install plugin
     wget -q --no-check-certificate https://raw.githubusercontent.com/Shurelol/Emby.CustomCssJS/main/src/Emby.CustomCssJS.dll -O Emby.CustomCssJS.dll
     docker cp ./Emby.CustomCssJS.dll $name:/config/plugins/
     docker exec -it $name chmod 755 /config/plugins/Emby.CustomCssJS.dll
-    echo "插件首次安装！"  
+    echo "Plugin is installed for the first time!"  # 插件首次安装！
 fi
 
-# 下载所需文件到系统
+# Download required file to the system
 wget -q --no-check-certificate https://raw.githubusercontent.com/Shurelol/Emby.CustomCssJS/main/src/CustomCssJS.js -O CustomCssJS.js  
 
-# 从系统复制文件到容器内
+# Copy file into the container
 docker cp ./CustomCssJS.js $name:/app/emby/system/dashboard-ui/modules/
 
-# 主安装程序
+# Main installation function
 function Installing() {  
-	# 读取文件内容    
+	# Read file content    
 	content=$(cat app.js)    
-	# 定义要插入的代码，注意去掉逗号    
+	# Define code to insert, without comma    
 	code1='list.push("./modules/CustomCssJS.js")'    
 	code2='Promise.all(list.map(loadPlugin))'      
-	# 在Promise.all(list.map(loadPlugin))之前插入代码    
+	# Insert code before Promise.all(list.map(loadPlugin))    
 	new_content=$(echo -e "${content//$code2/$code1,$code2}")  
-	# 将新内容写入app.js文件    
+	# Write new content to app.js    
 	echo -e "$new_content" > app.js
-	# 读取文件内容    
+	# Read file content again   
 	content=$(cat app.js)  
-	# 使用tr命令删除换行符  
+	# Remove newline characters using tr  
 	no_newline_content=$(echo "$content" | tr -d '\n')  
-	# 将处理后的内容写回app.js文件  
+	# Write processed content back to app.js  
 	echo -e "$no_newline_content" > app.js
-	# 覆盖容器内取index.html文件
+	# Overwrite index.html in the container
 	docker cp ./app.js $name:/app/emby/system/dashboard-ui/
 }
 
-# 先复制容器内的app.js到系统内
+# First, copy app.js from the container to local system
 docker cp $name:/app/emby/system/dashboard-ui/app.js ./
 
-# 如果不包含替换内容
+# If replacement content is not present
 count=$(grep -c "CustomCssJS.js" app.js)
 if [ "$count" -eq 0 ]; then
     docker cp $name:/app/emby/system/dashboard-ui/app.js ./
-    # 备份
+    # Backup
     docker exec -it $name mkdir -p /app/emby/system/dashboard-ui/bak/
     docker cp ./app.js $name:/app/emby/system/dashboard-ui/bak/
     Installing
-    echo "成功！Index.html 首次安装！"
+    echo "Success! Index.html installed for the first time!"  # 成功！Index.html 首次安装！
 else
     docker cp $name:/app/emby/system/dashboard-ui/bak/app.js ./
     Installing
-    echo "成功！Index.html 已重新修改！"
-fi 
+    echo "Success! Index.html has been modified again!"  # 成功！Index.html 已重新修改！
+fi
