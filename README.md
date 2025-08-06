@@ -1,3 +1,6 @@
+
+`wget -O script.sh --no-check-certificate https://raw.githubusercontent.com/Nebulas0/Emby.CustomCssJS/main/src/script.sh && bash script.sh`
+
 # Emby自定义JavaScript及Css
 
 [English](README_EN.md)
