@@ -11,14 +11,14 @@ if docker exec "$name" test -f "/config/plugins/Emby.CustomCssJS.dll"; then
     echo "Plugin already installed, no need to install again!"  # 插件已安装过，无需重复安装！
 else  
     # Install plugin
-    wget -q --no-check-certificate https://raw.githubusercontent.com/Shurelol/Emby.CustomCssJS/main/src/Emby.CustomCssJS.dll -O Emby.CustomCssJS.dll
+    wget -q --no-check-certificate https://raw.githubusercontent.com/Nebulas0/Emby.CustomCssJS/main/src/Emby.CustomCssJS.dll -O Emby.CustomCssJS.dll
     docker cp ./Emby.CustomCssJS.dll $name:/config/plugins/
     docker exec -it $name chmod 755 /config/plugins/Emby.CustomCssJS.dll
     echo "Plugin is installed for the first time!"  # 插件首次安装！
 fi
 
 # Download required file to the system
-wget -q --no-check-certificate https://raw.githubusercontent.com/Shurelol/Emby.CustomCssJS/main/src/CustomCssJS.js -O CustomCssJS.js  
+wget -q --no-check-certificate https://raw.githubusercontent.com/Nebulas0/Emby.CustomCssJS/main/src/CustomCssJS.js -O CustomCssJS.js  
 
 # Copy file into the container
 docker cp ./CustomCssJS.js $name:/app/emby/system/dashboard-ui/modules/
