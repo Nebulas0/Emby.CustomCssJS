@@ -1,34 +1,23 @@
 
 `wget -O script.sh --no-check-certificate https://raw.githubusercontent.com/Nebulas0/Emby.CustomCssJS/main/src/script.sh && bash script.sh`
 
-# Emby自定义JavaScript及Css
+# EmbyCustomJavaScriptinCss
 
 [English](README_EN.md)
-- **注意XSS风险，出现任何问题后果自负**
-- **此插件基于 mediabrowser.server.core 4.8.0.24-beta**
-- [使用说明](src/README.md)
-- 脚本（粘贴代码到自定义JavaScript或Css）
-  - [Telegram频道](https://t.me/embycustomcssjs)
-  - 弹幕相关插件暂时无法通过JavaScript及Css添加
+**Beware of XSS risks. Any issues are at your own risk.**
 
-- 管理员页面：
-  - 为所有用户提供脚本，用户可以选择使用（强制开启的强制使用）
+**This plugin is based on mediabrowser.server.core 4.8.0.24-beta**
+
+[Instructions](src/README.md)
+
+Script (Paste the code into custom JavaScript or CSS)
+
+[Telegram Channel](https://t.me/embycustomcssjs)
+
+Bangmu plugins are currently unavailable for JavaScript or CSS.
+
+Admin Page:
+
+Scripts are available to all users, and users can choose to use them (mandatory).
 
   ![photo_2023-05-14_21-45-18](https://github.com/Shurelol/Emby.CustomCssJS/assets/16237201/b3890993-e5e7-497f-915c-8df75c53f64a)
-  
-
-- 用户页面：
-  - 管理员提供的脚本可以选择使用
-  - 用户可自行添加脚本（储存在localStorage）
-  
-  ![photo_2023-05-14_21-45-22](https://github.com/Shurelol/Emby.CustomCssJS/assets/16237201/25309616-bfa1-464c-94a8-e29e500d5278)
-
-- 控制台中可查看脚本加载情况
-
-  ![image](https://github.com/Shurelol/Emby.CustomCssJS/assets/16237201/7874ebc0-806a-4d08-b3f3-d4b46809c5d7)
-  
-- 编辑界面提供代码编辑器
-
-  ![image](https://github.com/Shurelol/Emby.CustomCssJS/assets/16237201/b6e486f9-7a08-428d-b8e4-4660d98685d7)
-  
-  ![image](https://github.com/Shurelol/Emby.CustomCssJS/assets/16237201/868d176d-366a-4f8f-b2cd-7571fe1f9b86)
