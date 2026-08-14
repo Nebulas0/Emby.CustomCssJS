@@ -37,8 +37,8 @@ fi
 # 4. Patch apploader.js to not override urlCacheParam if already set
 APPLOADER="/app/emby/system/dashboard-ui/apploader.js"
 if [ -f "$APPLOADER" ]; then
-  if ! grep -q "urlCacheParam||" "$APPLOADER"; then
-    sed -i 's|docElem?globalThis.urlCacheParam="v="+docElem:appMode||(globalThis.urlCacheParam="v="+Date.now())|globalThis.urlCacheParam||(docElem?globalThis.urlCacheParam="v="+docElem:appMode||(globalThis.urlCacheParam="v="+Date.now()))|' "$APPLOADER"
+  if ! grep -q "urlCacheParam||(" "$APPLOADER"; then
+    perl -pi -e 's/docElem\?globalThis\.urlCacheParam="v="\+docElem:appMode\|\|\(globalThis\.urlCacheParam="v="\+Date\.now\(\)\)/globalThis.urlCacheParam||(docElem?globalThis.urlCacheParam="v="+docElem:appMode||(globalThis.urlCacheParam="v"+Date.now()))/' "$APPLOADER"
     echo "[customcssjs] apploader.js patched for cache busting"
   else
     echo "[customcssjs] apploader.js already patched, skipping"
