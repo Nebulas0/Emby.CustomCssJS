@@ -129,5 +129,26 @@ define([
 
     events.on(connectionManager, "localusersignedin", loadCustomCssJS());
 
+    // FIX: Also try loading immediately if user is already signed in.
+    // Emby 4.9 restores sessions without firing localusersignedin.
+    function tryLoadNow() {
+      try {
+        var api = null;
+        try { api = connectionManager.currentApiClient(); } catch(e) {}
+        if (!api && window.ApiClient) api = window.ApiClient;
+        if (!api && globalThis.ApiClient) api = globalThis.ApiClient;
+        if (api && api.serverAddress && !window.isCustomCssJSLoad) {
+          console.log("[CustomCssJS] ApiClient ready, loading scripts now");
+          loadConfiguration();
+        }
+      } catch(e) {
+        console.error("[CustomCssJS] tryLoadNow error:", e);
+      }
+    }
+    tryLoadNow();
+    setTimeout(tryLoadNow, 1000);
+    setTimeout(tryLoadNow, 3000);
+    setTimeout(tryLoadNow, 5000);
+
   }
 });
