@@ -30,3 +30,62 @@
   ![image](https://github.com/Shurelol/Emby.CustomCssJS/assets/16237201/b044e5e0-0bb9-4bc6-bdcc-ad764d1cb607)
   
   ![image](https://github.com/Shurelol/Emby.CustomCssJS/assets/16237201/666c385c-457b-4949-ae32-25c8bf6621ae)
+
+---
+
+## LSIO Docker Mod (Automatic Installation)
+
+For Emby servers running in a [LinuxServer.io (LSIO) Docker container](https://github.com/linuxserver/docker-emby), you can use the **LSIO Docker Mod** to automatically install the plugin on every container startup — no manual intervention needed after container recreation.
+
+### How it works
+
+The mod image (`ghcr.io/nebulas0/emby-customcssjs:latest`) contains:
+- `Emby.CustomCssJS.dll` — the plugin
+- `CustomCssJS.js` — the JS module
+- `01-customcssjs.sh` — an init script that runs on every container start
+
+The init script:
+1. Copies the plugin DLL to `/config/plugins/` (persistent volume, idempotent)
+2. Copies the JS module to `/app/emby/system/dashboard-ui/modules/`
+3. Patches `app.js` to load the module (idempotent, creates a `.bak` backup)
+
+### Usage
+
+Add the mod to your `DOCKER_MODS` environment variable, separated by `|` if you have existing mods:
+
+```yaml
+# Example: Saltbox inventory (host_vars/localhost.yml)
+clean_docker_envs_custom:
+  DOCKER_MODS: "ghcr.io/darthshadow/linuxserver-mod-sqlite3-emby:2026.07.20-r2|ghcr.io/nebulas0/emby-customcssjs:latest"
+```
+
+```yaml
+# Example: docker-compose.yml
+services:
+  emby:
+    image: lscr.io/linuxserver/emby:latest
+    environment:
+      - DOCKER_MODS=ghcr.io/nebulas0/emby-customcssjs:latest
+    volumes:
+      - /path/to/config:/config
+```
+
+After adding the mod, recreate the container. The plugin will be installed automatically on startup. Check the container logs for `[customcssjs]` messages to confirm.
+
+### Manual installation (alternative)
+
+If you're not using an LSIO container, use the [manual script](src/script.sh):
+
+```bash
+wget -O script.sh --no-check-certificate https://raw.githubusercontent.com/Nebulas0/Emby.CustomCssJS/main/src/script.sh && bash script.sh
+```
+
+### Building the mod image
+
+The mod is automatically built and published to GHCR via GitHub Actions on every push to `main` that changes files in the `mod/` directory. You can also build it locally:
+
+```bash
+cd mod/
+docker build -t ghcr.io/nebulas0/emby-customcssjs:latest .
+docker push ghcr.io/nebulas0/emby-customcssjs:latest
+```
