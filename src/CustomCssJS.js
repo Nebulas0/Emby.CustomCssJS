@@ -23,10 +23,6 @@ define([
 
     function loadJS(name, content, source) {
       try {
-        // let s = document.createElement("script");
-        // s.type = "text/javascript";
-        // s.innerHTML = content;
-        // document.body.appendChild(s);
         new Function(content)();
         console.warn(`load CustomJS from ${source}: ${name}`);
       } catch (e) {
@@ -43,7 +39,6 @@ define([
     }
 
     function getCustom(type, config) {
-      // get Config for Server
       let serverId = ApiClient.serverId();
       let customServerConfig = localStorage.getItem(`custom${type}ServerConfig_${serverId}`);
       if (!customServerConfig) {
@@ -52,10 +47,8 @@ define([
       } else {
         customServerConfig = JSON.parse(customServerConfig);
       }
-      // get custom in Server
       let customServer = config[`custom${type}`].filter(item => (item.state === "on" && customServerConfig.includes(item.name)) || item.state === "forced_on" );
 
-      // get Config for Local
       let customLocalConfig = localStorage.getItem(`custom${type}LocalConfig`);
       if (!customLocalConfig) {
         customLocalConfig = [];
@@ -63,7 +56,6 @@ define([
       } else {
         customLocalConfig = JSON.parse(customLocalConfig);
       }
-      // get custom in Local
       let customLocal = localStorage.getItem(`custom${type}Local`);
       if (!customLocal) {
         customLocal = [];
@@ -128,6 +120,23 @@ define([
     }
 
     events.on(connectionManager, "localusersignedin", loadCustomCssJS());
+
+    // Also try loading immediately if a user is already signed in.
+    // Emby 4.9 often restores sessions without firing localusersignedin.
+    function tryImmediateLoad() {
+      try {
+        if (window.ApiClient && window.ApiClient.serverId && window.ApiClient.serverId()) {
+          if (!window.isCustomCssJSLoad) {
+            console.log("[CustomCssJS] User already signed in, loading scripts immediately");
+            loadConfiguration();
+          }
+        }
+      } catch (e) { }
+    }
+
+    tryImmediateLoad();
+    setTimeout(tryImmediateLoad, 2000);
+    setTimeout(tryImmediateLoad, 5000);
 
   }
 });
